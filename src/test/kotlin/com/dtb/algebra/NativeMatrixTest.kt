@@ -7,8 +7,8 @@ import org.junit.jupiter.api.assertThrows
 import kotlin.test.assertEquals
 
 import com.dtb.algebra.matrix.Matrix.Companion.times
-import com.dtb.algebra.utils.AnyUtils.println
 import kotlin.random.Random
+import kotlin.test.assertNotEquals
 
 object NativeMatrixTest {
 	@Test
@@ -55,7 +55,6 @@ object NativeMatrixTest {
 		assertThrows<IllegalArgumentException> { matrix1 + matrix3 }
 		assertThrows<IllegalArgumentException> { matrix3 + matrix2 }
 	}
-
 	@Test
 	fun minus() {
 		val matrix1 = Matrix.new(3, 3) { _, _ -> 1.0 }
@@ -117,7 +116,73 @@ object NativeMatrixTest {
 	}
 
 	@Test
+	fun minor() {
+		val matrix1 = Matrix.of("2,3,4;4,3,2;2,3,4")
+
+		val minor1  = Matrix.of("2,4;2,4")
+		assertEquals(minor1, matrix1.minor(1, 1))
+
+		val minor2  = Matrix.of("4,3;2,3")
+		assertEquals(minor2, matrix1.minor(2, 0))
+
+		val matrix2 = Matrix.new(3, 3)
+		assertNotEquals(matrix1.minor(1, 1), matrix2.minor(1, 1))
+	}
+
+	@Test
+	fun cofactor() {
+		val matrix1 = Matrix.of("2")
+		assertEquals(Matrix.of("1"), matrix1.cofactor())
+
+		val matrix2 = Matrix.of("1,2;3,4")
+		assertEquals(Matrix.of("4,-3;-2,1"), matrix2.cofactor())
+
+		val matrix3 = Matrix.of("1,2,3;4,5,6;7,8,9")
+		assertEquals(Matrix.of("-3,6,-3;6,-12,6;-3,6,-3"), matrix3.cofactor())
+	}
+
+	@Test
+	fun adjunct() {
+		val matrix1 = Matrix.of("2")
+		assertEquals(Matrix.of("1"), matrix1.adjunct())
+
+		val matrix2 = Matrix.of("1,2;3,4")
+		assertEquals(Matrix.of("4,-2;-3,1"), matrix2.adjunct())
+
+		val matrix3 = Matrix.of("1,2,3;4,5,6;7,8,9")
+		assertEquals(Matrix.of("-3,6,-3;6,-12,6;-3,6,-3"), matrix3.adjunct())
+	}
+
+	@Test
+	fun inverse() {
+		val matrix1 = Matrix.of("2")
+		assertEquals(Matrix.of("0.5"), matrix1.inverse())
+
+		val matrix2 = Matrix.of("1,2;3,4")
+		assertEquals(Matrix.of("-2,1;1.5,-0.5"), matrix2.inverse())
+
+		val matrix3 = Matrix.of("1,2,3;4,5,6;7,8,9")
+		assertThrows<IllegalArgumentException> { matrix3.inverse() }
+	}
+
+	@Test
+	fun determinate() {
+		val matrix1 = Matrix.of("1,4;5,7")
+		assertEquals(-13.0, matrix1.determinate())
+
+		val matrix2 = Matrix.of("3,5,2;4,1,-1;8,7,2")
+		assertEquals(-13.0, matrix2.determinate())
+
+		val matrix3 = Matrix.of("5,0,2,0;4,7,8,2;1,8,2,1;2,9,1,2")
+		assertEquals(-247.0, matrix3.determinate())
+	}
+
+	@Test
 	fun hashcode() {
+		for (i in 1..<5)
+			for (j in 1..<5)
+				assertEquals(Matrix.new(i, j).hashCode(), 0)
+
 		for (i in 1..<20)
 			for (j in 1..<20) {
 				val matrix = NativeMatrix(i, j) { _, _ -> Random.nextDouble() }

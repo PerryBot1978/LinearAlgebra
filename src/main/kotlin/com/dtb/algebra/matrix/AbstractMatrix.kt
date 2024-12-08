@@ -1,6 +1,7 @@
 package com.dtb.algebra.matrix
 
 import com.dtb.algebra.utils.ArrayUtils.stream
+import java.util.OptionalDouble
 import java.util.stream.IntStream
 import kotlin.streams.asStream
 
@@ -39,5 +40,18 @@ abstract class AbstractMatrix: Matrix {
 				}
 		}
 		return false
+	}
+
+	// Because Matrix is immutable, the determinate is always the same
+	// Allowing for easy memoization
+	private var determinateMemo: OptionalDouble = OptionalDouble.empty()
+	override fun determinate(): Double {
+		if (determinateMemo.isPresent)
+			return determinateMemo.asDouble
+
+		determinateMemo = OptionalDouble.of(
+			super.determinate()
+		)
+		return determinateMemo.asDouble
 	}
 }

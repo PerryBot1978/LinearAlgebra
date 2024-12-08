@@ -44,6 +44,7 @@ open class NativeMatrix(val width: Int, val height: Int, initializer: (Int, Int)
 		return values[j * width() + i]
 	}
 
+
 	private operator fun set(i: Int, value: Double) { values[i] = value }
 	private operator fun set(i: Int, j: Int, value: Double) { values[j * width + i] = value }
 
@@ -51,42 +52,5 @@ open class NativeMatrix(val width: Int, val height: Int, initializer: (Int, Int)
 		return NativeMatrix(width, height) {
 			 i, j -> this[i, j]
 		}
-	}
-
-	override fun toString(): String {
-		val out = rows()
-			.asStream()
-			.map {
-				val out = it
-					.stream()
-					.map { it.toString() }
-					.reduce { str1, str2 -> "$str1, $str2" }
-					.orElseThrow()
-				"{$out}"
-			}.reduce { row1, row2 -> "$row1, $row2" }
-			.orElse("{}")
-		return "{$out}"
-	}
-
-	override fun hashCode(): Int {
-		return this
-			.values
-			.stream()
-			.map { it.hashCode() }
-			.reduce { num1, num2 -> num1 * num2 }
-			.orElse(0)
-	}
-	override fun equals(other: Any?): Boolean {
-		if (other == null)
-			return false
-		if (other is Matrix) {
-			return IntStream
-				.range(0, this.width)
-				.allMatch { i -> IntStream
-					.range(0, this.height)
-					.allMatch { j -> other[i, j] == this[i, j] }
-				}
-		}
-		return false
 	}
 }

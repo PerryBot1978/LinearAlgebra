@@ -1,8 +1,10 @@
 package com.dtb.algebra.matrix
 
-import com.dtb.algebra.utils.AnyUtils.println
+import com.dtb.algebra.matrix.memoize.memoize
+import java.util.OptionalDouble
 import java.util.stream.IntStream
-
+import kotlin.math.pow
+import kotlin.streams.asSequence
 
 interface Matrix: Cloneable {
 	companion object {
@@ -23,16 +25,14 @@ interface Matrix: Cloneable {
 	fun width(): Int
 	fun height(): Int
 
-	fun cols(): Sequence<Array<Double>> = sequence {
-		for (i in 0..<width()) {
-			yield(Array(height()) { this@Matrix[i, it] })
-		}
-	}
-	fun rows(): Sequence<Array<Double>> = sequence {
-		for (i in 0..<height()) {
-			yield(Array(width()) { this@Matrix[it, i] })
-		}
-	}
+	fun cols(): Sequence<Array<Double>> = IntStream
+		.range(0, this@Matrix.width())
+		.mapToObj { Array(this@Matrix.height()) { i -> this@Matrix[it, i] } }
+		.asSequence()
+	fun rows(): Sequence<Array<Double>> = IntStream
+		.range(0, this@Matrix.height())
+		.mapToObj { Array(this@Matrix.width()) { i -> this@Matrix[i, it] } }
+		.asSequence()
 
 	operator fun plus(other: Matrix): Matrix
 	operator fun minus(other: Matrix): Matrix
@@ -89,9 +89,61 @@ interface Matrix: Cloneable {
 	}
 	fun transpose(): Matrix = Matrix.new(this.height(), this.width()) { i,j -> this[j, i] }
 
-	override fun clone(): Matrix {
-		return Matrix.new(this.width(), this.height()) {
+	fun minor(i: Int, j: Int): Matrix = { i: Int, j: Int ->
+		Matrix.new(this.width() - 1, this.height() - 1) { i2, j2 ->
+			val newI = if (i2 < i) i2 else i2 + 1
+			val newJ = if (j2 < j) j2 else j2 + 1
+			this[newI, newJ]
+		}
+	}.memoize().invoke(i, j)
+
+	fun determinate(): Double{
+		if (this.width() != this.height())
+			TODO()
+
+		if (this.width() == 0 && this.height() == 0)
+			return 1.0
+		if (this.width() == 1 && this.height() == 1)
+			return this[0, 0]
+		if (this.width() == 2 && this.height() == 2)
+			return this[0, 0] * this[1, 1] - this[0, 1] * this[1, 0]
+
+		// Sarrus Rule
+		if (this.width() == 3 && this.height() == 3) {
+			val prod1 = this[0, 0] * this[1, 1] * this[2, 2]
+			val prod2 = this[1, 0] * this[2, 1] * this[0, 2]
+			val prod3 = this[2, 0] * this[0, 1] * this[1, 2]
+			val prod4 = this[0, 2] * this[1, 1] * this[2, 0]
+			val prod5 = this[0, 1] * this[1, 0] * this[2, 2]
+			val prod6 = this[0, 0] * this[2, 1] * this[1, 2]
+			return prod1 + prod2 + prod3 - prod4 - prod5 - prod6
+		}
+
+		// Laplace Reduction
+		return IntStream
+			.range(0, this.width())
+			.parallel()
+			.mapToDouble { i ->
+				val sign = (-1.0).pow(i + 0)
+				val multiple = this[i, 0]
+				val determinate = this.minor(i, 0).determinate()
+				sign * multiple * determinate
+			}.sum()
+	}
+
+	fun cofactor(): Matrix = Matrix.new(this.width(), this.height()) { i, j ->
+		(-1.0).pow(i + j) * this.minor(i, j).determinate()
+	}
+	fun adjunct(): Matrix = this.cofactor().transpose()
+	fun inverse(): Matrix {
+		val det = this.determinate()
+		if (det == 0.0)
+			throw IllegalArgumentException("Matrix had determinate of 0")
+		return this.adjunct() / det
+	}
+
+	override fun clone(): Matrix =
+		Matrix.new(this.width(), this.height()) {
 			i, j -> this[i, j]
 		}
-	}
 }
