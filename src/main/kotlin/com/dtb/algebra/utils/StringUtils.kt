@@ -12,7 +12,7 @@ object StringUtils {
 	fun String.file() = File(this)
 
 	fun String.println() = println(this)
-	fun String.writeToFile(filename: String) = filename.file().writeText(this)
+	fun String.writeTo(filename: String) = filename.file().writeText(this)
 	fun String.readFile(): String = File(this).readText()
 
 	@OptIn(ExperimentalSerializationApi::class)

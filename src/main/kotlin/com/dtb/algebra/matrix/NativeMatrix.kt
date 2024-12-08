@@ -2,8 +2,10 @@ package com.dtb.algebra.matrix
 
 import com.dtb.algebra.utils.ArrayUtils.stream
 import java.util.logging.Logger
+import java.util.stream.IntStream
+import kotlin.streams.asStream
 
-open class NativeMatrix(val width: Int, val height: Int, initializer: (Int, Int) -> Double) : Matrix {
+open class NativeMatrix(val width: Int, val height: Int, initializer: (Int, Int) -> Double) : AbstractMatrix() {
 	private val values: Array<Double> = Array(width * height) { initializer(it % width, it / width) }
 	constructor(width: Int, height: Int): this(width, height, {_, _ -> 0.0 })
 
@@ -31,12 +33,6 @@ open class NativeMatrix(val width: Int, val height: Int, initializer: (Int, Int)
 		return NativeMatrix(this.width(), this.height()) { i, j -> this[i, j] / other }
 	}
 
-	override operator fun times(other: Matrix): Matrix {
-		if (this.width() != other.height())
-			throw IllegalArgumentException("Invalid matrix argument size for Matrix.times(Matrix)")
-		TODO()
-	}
-
 	private operator fun get(i: Int): Double = values[i]
 	override operator fun get(i: Int, j: Int): Double {
 		if (j * width() + i >= this.values.size) {
@@ -59,18 +55,16 @@ open class NativeMatrix(val width: Int, val height: Int, initializer: (Int, Int)
 
 	override fun toString(): String {
 		val out = rows()
-			.toList()
-			.stream()
+			.asStream()
 			.map {
 				val out = it
-					.toList()
 					.stream()
 					.map { it.toString() }
 					.reduce { str1, str2 -> "$str1, $str2" }
 					.orElseThrow()
 				"{$out}"
 			}.reduce { row1, row2 -> "$row1, $row2" }
-			.orElseThrow { IllegalArgumentException() }
+			.orElse("{}")
 		return "{$out}"
 	}
 
@@ -85,12 +79,13 @@ open class NativeMatrix(val width: Int, val height: Int, initializer: (Int, Int)
 	override fun equals(other: Any?): Boolean {
 		if (other == null)
 			return false
-		if (other::class.java == this::class.java) {
-			for (i in 0..<this.width)
-				for (j in 0..<this.height)
-					if ((other as NativeMatrix)[i, j] != this[i, j])
-						return false
-			return true
+		if (other is Matrix) {
+			return IntStream
+				.range(0, this.width)
+				.allMatch { i -> IntStream
+					.range(0, this.height)
+					.allMatch { j -> other[i, j] == this[i, j] }
+				}
 		}
 		return false
 	}
