@@ -1,7 +1,5 @@
 package com.dtb.algebra.matrix
 
-import com.dtb.algebra.matrix.memoize.memoize
-import java.util.OptionalDouble
 import java.util.stream.IntStream
 import kotlin.math.pow
 import kotlin.streams.asSequence
@@ -34,14 +32,22 @@ interface Matrix: Cloneable {
 		.mapToObj { Array(this@Matrix.width()) { i -> this@Matrix[i, it] } }
 		.asSequence()
 
-	operator fun plus(other: Matrix): Matrix
-	operator fun minus(other: Matrix): Matrix
+	operator fun plus(other: Matrix): Matrix {
+		if (this.width() != other.width() || this.height() != other.height())
+			throw IllegalArgumentException()
+		return Matrix.new(this.width(), this.height()) { i, j -> this[i, j] + other[i, j] }
+	}
+	operator fun minus(other: Matrix): Matrix {
+		if (this.width() != other.width() || this.height() != other.height())
+			throw IllegalArgumentException()
+		return Matrix.new(this.width(), this.height()) { i, j -> this[i, j] - other[i, j] }
+	}
 
-	operator fun times(other: Int): Matrix
-	operator fun div(other: Int): Matrix
+	operator fun times(other: Int): Matrix = Matrix.new(this.width(), this.height()) { i, j -> this[i, j] * other }
+	operator fun div(other: Int): Matrix = Matrix.new(this.width(), this.height()) { i, j -> this[i, j] / other }
 
-	operator fun times(other: Double): Matrix
-	operator fun div(other: Double): Matrix
+	operator fun times(other: Double): Matrix = Matrix.new(this.width(), this.height()) { i, j -> this[i, j] * other }
+	operator fun div(other: Double): Matrix = Matrix.new(this.width(), this.height()) { i, j -> this[i, j] / other }
 
 	operator fun times(other: Matrix): Matrix {
 		if (this.width() != other.height())
@@ -89,13 +95,7 @@ interface Matrix: Cloneable {
 	}
 	fun transpose(): Matrix = Matrix.new(this.height(), this.width()) { i,j -> this[j, i] }
 
-	fun minor(i: Int, j: Int): Matrix = { i: Int, j: Int ->
-		Matrix.new(this.width() - 1, this.height() - 1) { i2, j2 ->
-			val newI = if (i2 < i) i2 else i2 + 1
-			val newJ = if (j2 < j) j2 else j2 + 1
-			this[newI, newJ]
-		}
-	}.memoize().invoke(i, j)
+	fun minor(i: Int, j: Int): Matrix = MatrixMinor(i, j, this)
 
 	fun determinate(): Double{
 		if (this.width() != this.height())

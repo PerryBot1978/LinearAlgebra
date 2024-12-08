@@ -118,12 +118,8 @@ object NativeMatrixTest {
 	@Test
 	fun minor() {
 		val matrix1 = Matrix.of("2,3,4;4,3,2;2,3,4")
-
-		val minor1  = Matrix.of("2,4;2,4")
-		assertEquals(minor1, matrix1.minor(1, 1))
-
-		val minor2  = Matrix.of("4,3;2,3")
-		assertEquals(minor2, matrix1.minor(2, 0))
+		assertEquals(Matrix.of("2,4;2,4"), matrix1.minor(1, 1))
+		assertEquals(Matrix.of("4,3;2,3"), matrix1.minor(2, 0))
 
 		val matrix2 = Matrix.new(3, 3)
 		assertNotEquals(matrix1.minor(1, 1), matrix2.minor(1, 1))
