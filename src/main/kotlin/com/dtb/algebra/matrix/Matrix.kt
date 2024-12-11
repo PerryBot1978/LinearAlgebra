@@ -4,6 +4,7 @@ import com.dtb.algebra.matrix.transforms.HorizontalMatrixMerge
 import com.dtb.algebra.matrix.transforms.MatrixMinor
 import com.dtb.algebra.matrix.transforms.MatrixView
 import com.dtb.algebra.matrix.transforms.VerticalMatrixMerge
+
 import java.util.stream.IntStream
 import kotlin.math.pow
 import kotlin.streams.asSequence
@@ -17,6 +18,16 @@ interface Matrix: Cloneable {
 		fun new(width: Int, height: Int, initializer: (Int, Int) -> Double): Matrix = ConcreteMatrix(width, height, initializer)
 
 		fun lazy(width: Int, height: Int, calc: (Int, Int) -> Double): Matrix = LazyMatrix(width, height, calc)
+
+		/**
+		 * Creates a matrix that has lazy initialized values, but will cache values that are initialized
+		 *
+		 * @param width The width of the returned matrix
+		 * @param height The height of the returned matrix
+		 * @param calc The function to initialize an index
+		 * @return CachingMatrix
+		 */
+		fun caching(width: Int, height: Int, calc: (Int, Int) -> Double): Matrix = CachingMatrix(width, height, calc)
 
 		fun of(str: String): Matrix {
 			val values = str
