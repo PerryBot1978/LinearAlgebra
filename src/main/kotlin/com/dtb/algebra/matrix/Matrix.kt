@@ -40,13 +40,13 @@ interface Matrix: Cloneable {
 	fun width(): Int
 	fun height(): Int
 
-	fun cols(): Sequence<Array<Double>> = IntStream
+	fun cols(): Sequence<List<Double>> = IntStream
 		.range(0, this@Matrix.width())
-		.mapToObj { Array(this@Matrix.height()) { i -> this@Matrix[it, i] } }
+		.mapToObj { List(this@Matrix.height()) { i -> this@Matrix[it, i] } }
 		.asSequence()
-	fun rows(): Sequence<Array<Double>> = IntStream
+	fun rows(): Sequence<List<Double>> = IntStream
 		.range(0, this@Matrix.height())
-		.mapToObj { Array(this@Matrix.width()) { i -> this@Matrix[i, it] } }
+		.mapToObj { List(this@Matrix.height()) { i -> this@Matrix[i, it] } }
 		.asSequence()
 
 	operator fun plus(other: Matrix): Matrix {
