@@ -1,5 +1,7 @@
 package com.dtb.algebra.function
 
+import com.dtb.algebra.matrix.Vector
+
 class RealPolynomial(val coefficients: List<Double>): RealFunction {
 	constructor(vararg x: Double): this(x.toList())
 
@@ -13,4 +15,6 @@ class RealPolynomial(val coefficients: List<Double>): RealFunction {
 				out
 			}.sum()
 	}
+
+	override fun toVector(): Vector = Vector(this.coefficients)
 }

@@ -1,7 +1,7 @@
 package com.dtb.algebra
 
 import com.dtb.algebra.matrix.Matrix
-import com.dtb.algebra.matrix.NativeMatrix
+import com.dtb.algebra.matrix.ConcreteMatrix
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import kotlin.test.assertEquals
@@ -10,7 +10,7 @@ import com.dtb.algebra.matrix.Matrix.Companion.times
 import kotlin.random.Random
 import kotlin.test.assertNotEquals
 
-object NativeMatrixTest {
+object ConcreteMatrixTest {
 	@Test
 	fun constructor1() {
 		for (i in 1..<20) {
@@ -100,7 +100,7 @@ object NativeMatrixTest {
 	}
 
 	@Test
-	fun matrixTimes() {
+	fun times() {
 		val matrix1 = Matrix.new(2, 2) { i, j -> i - j + 2.0 }
 		val square1 = Matrix.of("7,12;4,7")
 		assertEquals(square1, matrix1 * matrix1)
@@ -181,7 +181,7 @@ object NativeMatrixTest {
 
 		for (i in 1..<20)
 			for (j in 1..<20) {
-				val matrix = NativeMatrix(i, j) { _, _ -> Random.nextDouble() }
+				val matrix = ConcreteMatrix(i, j) { _, _ -> Random.nextDouble() }
 				assertEquals(matrix.hashCode(), matrix.hashCode())
 			}
 	}

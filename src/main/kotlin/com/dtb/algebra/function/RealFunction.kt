@@ -1,3 +1,7 @@
 package com.dtb.algebra.function
 
-interface RealFunction: (Double) -> Double
+import com.dtb.algebra.matrix.Vector
+
+interface RealFunction: (Double) -> Double {
+	fun toVector(): Vector
+}

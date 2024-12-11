@@ -46,5 +46,5 @@ class Complex private constructor(private var a: Double, private var b: Double){
 		.range(0, power)
 		.mapToObj { this }
 		.reduce(Complex::times)
-		.orElse(Complex(1, 0))
+		.orElse(Complex(1.0, 0.0))
 }

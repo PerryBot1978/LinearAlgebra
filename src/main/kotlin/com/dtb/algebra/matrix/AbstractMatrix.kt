@@ -24,7 +24,12 @@ abstract class AbstractMatrix: Matrix {
 		return this
 			.rows()
 			.asStream()
-			.map { it.stream().map { it.hashCode() }.reduce { i, j -> i * j }.orElse(0) }
+			.map { it
+				.stream()
+				.map { it.hashCode() }
+				.reduce { i, j -> i * j }
+				.orElse(0)
+			}
 			.reduce { num1, num2 -> num1 * num2 }
 			.orElse(0)
 	}
