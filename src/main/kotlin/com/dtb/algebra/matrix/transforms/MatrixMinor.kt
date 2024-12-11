@@ -1,4 +1,7 @@
-package com.dtb.algebra.matrix
+package com.dtb.algebra.matrix.transforms
+
+import com.dtb.algebra.matrix.AbstractMatrix
+import com.dtb.algebra.matrix.Matrix
 
 class MatrixMinor(val excludeI: Int, val excludeJ: Int, val parent: Matrix): AbstractMatrix() {
 	override fun width(): Int = parent.width() - 1

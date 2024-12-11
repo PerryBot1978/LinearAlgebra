@@ -1,4 +1,7 @@
-package com.dtb.algebra.matrix
+package com.dtb.algebra.matrix.transforms
+
+import com.dtb.algebra.matrix.AbstractMatrix
+import com.dtb.algebra.matrix.Matrix
 
 class HorizontalMatrixMerge(val left: Matrix, val right: Matrix): AbstractMatrix() {
 	init {

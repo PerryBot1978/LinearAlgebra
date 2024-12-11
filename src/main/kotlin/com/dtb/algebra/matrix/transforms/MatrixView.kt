@@ -1,4 +1,7 @@
-package com.dtb.algebra.matrix
+package com.dtb.algebra.matrix.transforms
+
+import com.dtb.algebra.matrix.AbstractMatrix
+import com.dtb.algebra.matrix.Matrix
 
 class MatrixView(
 	private val width: Int,

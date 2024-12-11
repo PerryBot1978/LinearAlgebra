@@ -1,5 +1,9 @@
 package com.dtb.algebra.matrix
 
+import com.dtb.algebra.matrix.transforms.HorizontalMatrixMerge
+import com.dtb.algebra.matrix.transforms.MatrixMinor
+import com.dtb.algebra.matrix.transforms.MatrixView
+import com.dtb.algebra.matrix.transforms.VerticalMatrixMerge
 import java.util.stream.IntStream
 import kotlin.math.pow
 import kotlin.streams.asSequence
