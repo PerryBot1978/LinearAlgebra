@@ -1,4 +1,4 @@
-package com.dtb.algebra.matrix
+package com.dtb.algebra.matrix.immutable
 
 import java.util.logging.Logger
 

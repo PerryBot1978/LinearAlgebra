@@ -1,6 +1,5 @@
-package com.dtb.algebra.matrix
+package com.dtb.algebra.matrix.immutable
 
-import com.dtb.algebra.utils.ArrayUtils.stream
 import java.util.OptionalDouble
 import java.util.stream.IntStream
 import kotlin.streams.asStream

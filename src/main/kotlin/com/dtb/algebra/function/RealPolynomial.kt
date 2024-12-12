@@ -1,6 +1,6 @@
 package com.dtb.algebra.function
 
-import com.dtb.algebra.matrix.Vector
+import com.dtb.algebra.matrix.immutable.Vector
 
 class RealPolynomial(val coefficients: List<Double>): RealFunction {
 	constructor(vararg x: Double): this(x.toList())

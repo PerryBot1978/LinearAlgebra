@@ -1,4 +1,4 @@
-package com.dtb.algebra.matrix
+package com.dtb.algebra.matrix.immutable
 
 import com.dtb.algebra.matrix.transforms.HorizontalMatrixMerge
 import com.dtb.algebra.matrix.transforms.MatrixMinor
@@ -18,6 +18,7 @@ interface Matrix: Cloneable {
 		fun new(width: Int, height: Int, initializer: (Int, Int) -> Double): Matrix = ConcreteMatrix(width, height, initializer)
 
 		fun lazy(width: Int, height: Int, calc: (Int, Int) -> Double): Matrix = LazyMatrix(width, height, calc)
+		fun lazy(width: Int, height: Int): Matrix = Matrix.lazy(width, height) { _, _ -> 0.0 }
 
 		/**
 		 * Creates a matrix that has lazy initialized values, but will cache values that are initialized
@@ -28,12 +29,21 @@ interface Matrix: Cloneable {
 		 * @return CachingMatrix
 		 */
 		fun caching(width: Int, height: Int, calc: (Int, Int) -> Double): Matrix = CachingMatrix(width, height, calc)
+		/**
+		 * Creates a matrix that has lazy initialized values, but will cache values that are initialized
+		 *
+		 * @param width The width of the returned matrix
+		 * @param height The height of the returned matrix
+		 * @param calc The function to initialize an index
+		 * @return CachingMatrix
+		 */
+		fun caching(width: Int, height: Int): Matrix = CachingMatrix(width, height) { _,_ -> 0.0 }
 
 		fun of(str: String): Matrix {
 			val values = str
 				.split(";")
 				.map { it.split(",").map(String::toDouble) }
-			return Matrix.new(values.size, values[0].size) { i, j -> values[j][i] }
+			return new(values.size, values[0].size) { i, j -> values[j][i] }
 		}
 	}
 
@@ -46,31 +56,31 @@ interface Matrix: Cloneable {
 		.asSequence()
 	fun rows(): Sequence<List<Double>> = IntStream
 		.range(0, this@Matrix.height())
-		.mapToObj { List(this@Matrix.height()) { i -> this@Matrix[i, it] } }
+		.mapToObj { List(this@Matrix.width()) { i -> this@Matrix[i, it] } }
 		.asSequence()
 
 	operator fun plus(other: Matrix): Matrix {
 		if (this.width() != other.width() || this.height() != other.height())
 			throw IllegalArgumentException()
-		return Matrix.lazy(this.width(), this.height()) { i, j -> this[i, j] + other[i, j] }
+		return lazy(this.width(), this.height()) { i, j -> this[i, j] + other[i, j] }
 	}
 	operator fun minus(other: Matrix): Matrix {
 		if (this.width() != other.width() || this.height() != other.height())
 			throw IllegalArgumentException()
-		return Matrix.lazy(this.width(), this.height()) { i, j -> this[i, j] - other[i, j] }
+		return lazy(this.width(), this.height()) { i, j -> this[i, j] - other[i, j] }
 	}
 
-	operator fun times(other: Int): Matrix = Matrix.lazy(this.width(), this.height()) { i, j -> this[i, j] * other }
-	operator fun div(other: Int): Matrix = Matrix.lazy(this.width(), this.height()) { i, j -> this[i, j] / other }
+	operator fun times(other: Int): Matrix = lazy(this.width(), this.height()) { i, j -> this[i, j] * other }
+	operator fun div(other: Int): Matrix = lazy(this.width(), this.height()) { i, j -> this[i, j] / other }
 
-	operator fun times(other: Double): Matrix = Matrix.lazy(this.width(), this.height()) { i, j -> this[i, j] * other }
-	operator fun div(other: Double): Matrix = Matrix.lazy(this.width(), this.height()) { i, j -> this[i, j] / other }
+	operator fun times(other: Double): Matrix = lazy(this.width(), this.height()) { i, j -> this[i, j] * other }
+	operator fun div(other: Double): Matrix = lazy(this.width(), this.height()) { i, j -> this[i, j] / other }
 
 	operator fun times(other: Matrix): Matrix {
 		if (this.width() != other.height())
 			throw IllegalArgumentException("Invalid matrix argument size for Matrix.times(Matrix)")
 
-		return Matrix.lazy(this.height(), other.width()) { i, j ->
+		return lazy(this.height(), other.width()) { i, j ->
 			IntStream
 				.range(0, other.height())
 				.mapToDouble { k -> this[k, j] * other[i, k] }
@@ -99,7 +109,7 @@ interface Matrix: Cloneable {
 			)
 		}
 	}
-	fun transpose(): Matrix = Matrix.lazy(this.height(), this.width()) { i, j -> this[j, i] }
+	fun transpose(): Matrix = lazy(this.height(), this.width()) { i, j -> this[j, i] }
 	fun minor(i: Int, j: Int): Matrix = MatrixMinor(i, j, this)
 
 	fun determinate(): Double {
@@ -140,7 +150,7 @@ interface Matrix: Cloneable {
 			.orElse(1.0)
 	}
 
-	fun cofactor(): Matrix = Matrix.lazy(this.width(), this.height()) { i, j ->
+	fun cofactor(): Matrix = lazy(this.width(), this.height()) { i, j ->
 		(-1.0).pow(i + j) * this.minor(i, j).determinate()
 	}
 	fun adjunct(): Matrix = this.cofactor().transpose()
@@ -171,7 +181,7 @@ interface Matrix: Cloneable {
 	 * Equivalent to Matrix.concrete()
 	 */
 	override fun clone(): Matrix =
-		Matrix.new(this.width(), this.height()) {
+		new(this.width(), this.height()) {
 			i, j -> this[i, j]
 		}
 }
