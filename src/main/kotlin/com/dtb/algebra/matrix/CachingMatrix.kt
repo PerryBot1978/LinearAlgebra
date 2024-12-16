@@ -1,4 +1,4 @@
-package com.dtb.algebra.matrix.immutable
+package com.dtb.algebra.matrix
 
 class CachingMatrix(val width: Int, val height: Int, val calc: (Int, Int) -> Double): AbstractMatrix() {
 	private val values = Array<Double?>(width * height) { index -> calc(index % width, index / width)}

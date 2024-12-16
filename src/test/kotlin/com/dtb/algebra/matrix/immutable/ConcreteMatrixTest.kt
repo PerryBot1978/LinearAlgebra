@@ -1,12 +1,12 @@
 package com.dtb.algebra.matrix.immutable
 
-import com.dtb.algebra.matrix.immutable.Matrix
-import com.dtb.algebra.matrix.immutable.ConcreteMatrix
+import com.dtb.algebra.matrix.Matrix
+import com.dtb.algebra.matrix.ConcreteMatrix
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import kotlin.test.assertEquals
 
-import com.dtb.algebra.matrix.immutable.Matrix.Companion.times
+import com.dtb.algebra.matrix.Matrix.Companion.times
 import kotlin.random.Random
 import kotlin.test.assertNotEquals
 

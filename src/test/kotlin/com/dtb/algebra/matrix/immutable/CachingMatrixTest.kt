@@ -1,12 +1,11 @@
 package com.dtb.algebra.matrix.immutable
 
-import com.dtb.algebra.matrix.immutable.Matrix
-import com.dtb.algebra.matrix.immutable.ConcreteMatrix
+import com.dtb.algebra.matrix.Matrix
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import kotlin.test.assertEquals
 
-import com.dtb.algebra.matrix.immutable.Matrix.Companion.times
+import com.dtb.algebra.matrix.Matrix.Companion.times
 import kotlin.random.Random
 import kotlin.test.assertNotEquals
 
@@ -121,7 +120,7 @@ object CachingMatrixTest {
 		assertEquals(Matrix.of("2,4;2,4"), matrix1.minor(1, 1))
 		assertEquals(Matrix.of("4,3;2,3"), matrix1.minor(2, 0))
 
-		val matrix2 = Matrix.caching(3, 3) { _,_ -> 0.0 }
+		val matrix2 = Matrix.caching(3, 3) { _, _ -> 0.0 }
 		assertNotEquals(matrix1.minor(1, 1), matrix2.minor(1, 1))
 	}
 

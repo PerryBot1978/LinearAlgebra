@@ -1,4 +1,4 @@
-package com.dtb.algebra.matrix.immutable
+package com.dtb.algebra.matrix
 
 import com.dtb.algebra.matrix.transforms.HorizontalMatrixMerge
 import com.dtb.algebra.matrix.transforms.MatrixMinor
@@ -18,7 +18,7 @@ interface Matrix: Cloneable {
 		fun new(width: Int, height: Int, initializer: (Int, Int) -> Double): Matrix = ConcreteMatrix(width, height, initializer)
 
 		fun lazy(width: Int, height: Int, calc: (Int, Int) -> Double): Matrix = LazyMatrix(width, height, calc)
-		fun lazy(width: Int, height: Int): Matrix = Matrix.lazy(width, height) { _, _ -> 0.0 }
+		fun lazy(width: Int, height: Int): Matrix = lazy(width, height) { _, _ -> 0.0 }
 
 		/**
 		 * Creates a matrix that has lazy initialized values, but will cache values that are initialized
@@ -37,7 +37,7 @@ interface Matrix: Cloneable {
 		 * @param calc The function to initialize an index
 		 * @return CachingMatrix
 		 */
-		fun caching(width: Int, height: Int): Matrix = CachingMatrix(width, height) { _,_ -> 0.0 }
+		fun caching(width: Int, height: Int): Matrix = CachingMatrix(width, height) { _, _ -> 0.0 }
 
 		fun of(str: String): Matrix {
 			val values = str

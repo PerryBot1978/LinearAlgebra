@@ -1,4 +1,4 @@
-package com.dtb.algebra.matrix.immutable
+package com.dtb.algebra.matrix
 
 /**
  * Represents a vector as an implementation of Matrix
