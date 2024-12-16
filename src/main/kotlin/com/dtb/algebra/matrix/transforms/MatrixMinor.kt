@@ -1,20 +1,18 @@
 package com.dtb.algebra.matrix.transforms
 
-import com.dtb.algebra.matrix.AbstractMatrix
+import com.dtb.algebra.matrix.LazyMatrix
 import com.dtb.algebra.matrix.Matrix
 
-class MatrixMinor(val excludeI: Int, val excludeJ: Int, val parent: Matrix): AbstractMatrix() {
-	override fun width(): Int = parent.width() - 1
-	override fun height(): Int = parent.height() - 1
+class MatrixMinor(
+	private val excludeI: Int,
+	private val excludeJ: Int,
+	private val parent: Matrix
+): LazyMatrix(parent.width() - 1, parent.height() - 1, { i, j ->
+	if (i > parent.width() - 1 || j > parent.height() - 1)
+		throw IndexOutOfBoundsException()
 
-	override fun get(i: Int, j: Int): Double {
-		if (i > this.width() || j > this.height())
-			throw IndexOutOfBoundsException()
+	val newI = if (i >= excludeI) i + 1 else i
+	val newJ = if (j >= excludeJ) j + 1 else j
 
-		val newI = if (i >= this.excludeI) i + 1 else i
-		val newJ = if (j >= this.excludeJ) j + 1 else j
-
-//		println("($i, $j) & ($excludeI, $excludeJ) => ($newI, $newJ)")
-		return parent[newI, newJ]
-	}
-}
+	parent[newI, newJ]
+})

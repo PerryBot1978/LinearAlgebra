@@ -1,21 +1,16 @@
 package com.dtb.algebra.matrix.transforms
 
-import com.dtb.algebra.matrix.AbstractMatrix
+import com.dtb.algebra.matrix.LazyMatrix
 import com.dtb.algebra.matrix.Matrix
 
 class MatrixView(
-	private val width: Int,
-	private val height: Int,
+	private val _width: Int,
+	private val _height: Int,
 	private val xOffset: Int,
 	private val yOffset: Int,
 	private val parent: Matrix
-): AbstractMatrix() {
-	override fun width(): Int = this.width
-	override fun height(): Int = this.height
-
-	override fun get(i: Int, j: Int): Double {
-		if (i > this.width || j > this.height)
-			throw IndexOutOfBoundsException()
-		return parent[i + this.xOffset, j + this.yOffset]
-	}
-}
+): LazyMatrix(_width, _height, { i, j ->
+	if (i > _width || j > _height)
+		throw IndexOutOfBoundsException()
+	parent[i + xOffset, j + yOffset]
+})

@@ -1,18 +1,16 @@
 package com.dtb.algebra.matrix.transforms
 
-import com.dtb.algebra.matrix.AbstractMatrix
+import com.dtb.algebra.matrix.LazyMatrix
 import com.dtb.algebra.matrix.Matrix
 
-class HorizontalMatrixMerge(val left: Matrix, val right: Matrix): AbstractMatrix() {
-	init {
-		if (left.height() != right.height())
-			throw IllegalArgumentException()
+class HorizontalMatrixMerge(
+	private val left: Matrix,
+	private val right: Matrix
+): LazyMatrix(
+	left.width() + right.width(),
+	left.height(),
+	{ i, j ->
+		if (i < left.width()) left[i, j]
+		else right[i - left.width(), j]
 	}
-
-	override fun width(): Int = left.width() + right.width()
-	override fun height(): Int = left.width()
-
-	override fun get(i: Int, j: Int): Double =
-		if (i < this.left.width()) this.left[i, j]
-		else this.right[i - this.left.width(), j]
-}
+)
